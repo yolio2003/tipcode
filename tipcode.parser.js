@@ -145,28 +145,16 @@ function peg$parse(input, options) {
       peg$c1 = function(x) {
           let accstr = ''
           let accarr = []
-          x.reduce((acc, n) => {
-            if (Object.prototype.toString.call(n) === '[object Object]') {
-                if (accstr !=='') {
-                  acc.push({
-                    type: 'text',
-                    code: accstr
-                  })
-                }
-                accstr = ''
-                acc.push(n)
-                return acc
+          x.map(v => {
+            if (Object.prototype.toString.call(v) === '[object Object]') {
+              strpush(accarr, accstr)
+              accstr = ''
+              accarr.push(v)
             } else {
-                accstr = accstr + n
-                return acc
+              accstr = accstr + v
             }
-          }, accarr)
-          if (accstr !=='') {
-            acc.push({
-              type: 'text',
-              code: accstr
-            })
-          }
+          })
+          strpush(accarr, accstr)
           return accarr
         },
       peg$c2 = " ",
@@ -178,17 +166,17 @@ function peg$parse(input, options) {
       peg$c8 = "*/",
       peg$c9 = peg$literalExpectation("*/", false),
       peg$c10 = function(indent, start, code, end) {
-          return blockfn('pair', code, start, end, indent, location())
+          return transform('pair', code.map(([a, b]) => b), start, end, indent, location())
         },
       peg$c11 = "/*>=",
       peg$c12 = peg$literalExpectation("/*>=", false),
       peg$c13 = function(indent, start, code, end) {
-          return blockfn('pair.val', code, start, end, indent, location())
+          return transform('pair.val', code.map(([a, b]) => b), start, end, indent, location())
         },
       peg$c14 = "/*>==",
       peg$c15 = peg$literalExpectation("/*>==", false),
       peg$c16 = function(indent, start, code, end) {
-          return blockfn('pair.val.str', code, start, end, indent, location())
+          return transform('pair.val.str', code.map(([a, b]) => b), start, end, indent, location())
         },
       peg$c17 = "//>",
       peg$c18 = peg$literalExpectation("//>", false),
@@ -196,18 +184,18 @@ function peg$parse(input, options) {
       peg$c20 = peg$classExpectation(["\n"], true, false),
       peg$c21 = "\n",
       peg$c22 = peg$literalExpectation("\n", false),
-      peg$c23 = function(indent, code, tail) {
-          return linefn('line', code, tail, indent, location())
+      peg$c23 = function(indent, start, code, end) {
+          return transform('line', code, start, end, indent, location())
         },
       peg$c24 = "//>=",
       peg$c25 = peg$literalExpectation("//>=", false),
-      peg$c26 = function(indent, code, tail) {
-          return linefn('line.val', code, tail, indent, location())
+      peg$c26 = function(indent, start, code, end) {
+          return transform('line.val', code, start, end, indent, location())
         },
       peg$c27 = "//>==",
       peg$c28 = peg$literalExpectation("//>==", false),
-      peg$c29 = function(indent, code, tail) {
-          return linefn('line.val.str', code, tail, indent, location())
+      peg$c29 = function(indent, start, code, end) {
+          return transform('line.val.str', code, start, end, indent, location())
         },
 
       peg$currPos          = 0,
@@ -867,7 +855,7 @@ function peg$parse(input, options) {
           }
           if (s4 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c23(s1, s3, s4);
+            s1 = peg$c23(s1, s2, s3, s4);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -939,7 +927,7 @@ function peg$parse(input, options) {
           }
           if (s4 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c26(s1, s3, s4);
+            s1 = peg$c26(s1, s2, s3, s4);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -1011,7 +999,7 @@ function peg$parse(input, options) {
           }
           if (s4 !== peg$FAILED) {
             peg$savedPos = s0;
-            s1 = peg$c29(s1, s3, s4);
+            s1 = peg$c29(s1, s2, s3, s4);
             s0 = s1;
           } else {
             peg$currPos = s0;
@@ -1034,10 +1022,10 @@ function peg$parse(input, options) {
   }
 
 
-    function blockfn(type, code, start, end, indent, location) {
+    function transform(type, code, start, end, indent, location) {
       let ret = {
         type: type,
-        code: code.map(([a, b]) => b).join(''),
+        code: code.join(''),
         start,
         end
       }
@@ -1048,18 +1036,13 @@ function peg$parse(input, options) {
 
       return ret
     }
-    function linefn(type, code, tail, indent, location) {
-      let ret = {
-        type: type,
-        code: code.join(''),
-        tail,
+    function strpush(arr, v) {
+      if (v !== '') {
+        arr.push({
+          type: 'text',
+          code: v
+        })
       }
-
-      if (location.start.column === 1) {
-        ret.indent = indent.join('')
-      }
-
-      return ret
     }
 
 

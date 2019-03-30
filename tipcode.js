@@ -30,18 +30,24 @@ function simpleIncludeExample(/*>file*/) {
 `;
 
 let parsed = peg.parse(TESTTEXT);
-log.log(parsed);
+// log.log(parsed);
 let complied = [];
 parsed.map(v => {
-  if (v.type === "text") {
-  } else if (v.type === "line") {
-  } else if (v.type === "linevalue") {
-  } else if (v.type === "linevaluestringify") {
-  } else if (v.type === "pair") {
-  } else if (v.type === "pairvalue") {
-  } else if (v.type === "pairvaluestringify") {
+  switch (v.type) {
+    case "text":
+      complied.push(v.code);
+      break;
+      case "line":
+      case "line.val":
+      case "line.val.str":
+      complied.push(v.indent + v.start + v.code + (v.end?v.end:''));
+      break;
+    case "pair":
+    case "pair.val":
+    case "pair.val.str":
+      complied.push(v.indent + v.start + v.code + (v.end?v.end:''));
+      break;
   }
-  complied.push(v.code + (v.tail?v.tail:''));
 });
 
 log.log(complied.join(""));

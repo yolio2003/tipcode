@@ -1,8 +1,8 @@
 {
-  function blockfn(type, code, start, end, indent, location) {
+  function transform(type, code, start, end, indent, location) {
     let ret = {
       type: type,
-      code: code.map(([a, b]) => b).join(''),
+      code: code.join(''),
       start,
       end
     }
@@ -13,18 +13,13 @@
 
     return ret
   }
-  function linefn(type, code, tail, indent, location) {
-    let ret = {
-      type: type,
-      code: code.join(''),
-      tail,
+  function strpush(arr, v) {
+    if (v !== '') {
+      arr.push({
+        type: 'text',
+        code: v
+      })
     }
-
-    if (location.start.column === 1) {
-      ret.indent = indent.join('')
-    }
-
-    return ret
   }
 }
 
@@ -32,28 +27,16 @@ TipCode
   = x:(PairValStrComment / PairValComment / PairComment / LineValStrComment / LineValComment / LineComment / .)* {
     let accstr = ''
     let accarr = []
-    x.reduce((acc, n) => {
-      if (Object.prototype.toString.call(n) === '[object Object]') {
-          if (accstr !=='') {
-            acc.push({
-              type: 'text',
-              code: accstr
-            })
-          }
-          accstr = ''
-          acc.push(n)
-          return acc
+    x.map(v => {
+      if (Object.prototype.toString.call(v) === '[object Object]') {
+        strpush(accarr, accstr)
+        accstr = ''
+        accarr.push(v)
       } else {
-          accstr = accstr + n
-          return acc
+        accstr = accstr + v
       }
-    }, accarr)
-    if (accstr !=='') {
-      acc.push({
-        type: 'text',
-        code: accstr
-      })
-    }
+    })
+    strpush(accarr, accstr)
     return accarr
   }
 
@@ -62,30 +45,30 @@ Indent
 
 PairComment
   = indent:Indent* start:'/*>' code:(!'*/' .)* end:'*/' {
-    return blockfn('pair', code, start, end, indent, location())
+    return transform('pair', code.map(([a, b]) => b), start, end, indent, location())
   }
 
 PairValComment
   = indent:Indent* start:'/*>=' code:(!'*/' .)* end:'*/' {
-    return blockfn('pair.val', code, start, end, indent, location())
+    return transform('pair.val', code.map(([a, b]) => b), start, end, indent, location())
   }
 
 PairValStrComment
   = indent:Indent* start:'/*>==' code:(!'*/' .)* end:'*/' {
-    return blockfn('pair.val.str', code, start, end, indent, location())
+    return transform('pair.val.str', code.map(([a, b]) => b), start, end, indent, location())
   }
 
 LineComment
-  = indent:Indent* '//>' code:[^\n]* tail:'\n'? {
-    return linefn('line', code, tail, indent, location())
+  = indent:Indent* start:'//>' code:[^\n]* end:'\n'? {
+    return transform('line', code, start, end, indent, location())
   }
 
 LineValComment
-  = indent:Indent* '//>=' code:[^\n]* tail:'\n'? {
-    return linefn('line.val', code, tail, indent, location())
+  = indent:Indent* start:'//>=' code:[^\n]* end:'\n'? {
+    return transform('line.val', code, start, end, indent, location())
   }
 
 LineValStrComment
-  = indent:Indent* '//>==' code:[^\n]* tail:'\n'? {
-    return linefn('line.val.str', code, tail, indent, location())
+  = indent:Indent* start:'//>==' code:[^\n]* end:'\n'? {
+    return transform('line.val.str', code, start, end, indent, location())
   }
