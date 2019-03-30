@@ -1,0 +1,19 @@
+{
+  "name": "tipcode",
+  "version": "1.0.1",
+  "description": "tip for js code by comment",
+  "main": "tipcode.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yolio2003/tipcode.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yolio2003/tipcode/issues"
+  },
+  "homepage": "https://github.com/yolio2003/tipcode#readme"
+}
