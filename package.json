@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/yolio2003/tipcode#readme",
   "devDependencies": {
-    "metascript": "^1.0.0"
+    "metascript": "^1.0.0",
+    "pegjs": "^0.10.0"
   }
 }

@@ -1,0 +1,75 @@
+[
+  {
+    "type": "line",
+    "code": "imlinecode",
+    "start": "//>",
+    "end": "\n",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": "function simpleIncludeExample("
+  },
+  {
+    "type": "pair",
+    "code": "file",
+    "start": "/*>",
+    "end": "*/",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": ") {\n  writeln(\n    indent(\n      require(\""
+  },
+  {
+    "type": "pair.val",
+    "code": "file",
+    "start": "/*>=",
+    "end": "*/",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": "\")\n        .readFileSync(file)\n        .toString(\""
+  },
+  {
+    "type": "pair.val.str",
+    "code": "file",
+    "start": "/*>==",
+    "end": "*/",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": "\"),\n      __\n    )\n  );\n  writeln(indent(\"indent\", __));\n}\n"
+  },
+  {
+    "type": "line.val",
+    "code": "line",
+    "start": "//>=",
+    "end": "\n",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": "12323\n"
+  },
+  {
+    "type": "pair",
+    "code": "123123",
+    "start": "/*>",
+    "end": "*/",
+    "indent": ""
+  },
+  {
+    "type": "text",
+    "code": "\n223123\n"
+  },
+  {
+    "type": "line.val.str",
+    "code": " simpleIncludeExample(\"./ms.js\")",
+    "start": "//>==",
+    "end": "\n",
+    "indent": "  "
+  }
+]

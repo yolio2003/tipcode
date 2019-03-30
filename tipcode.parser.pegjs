@@ -9,6 +9,8 @@
 
     if (location.start.column === 1) {
       ret.indent = indent.join('')
+    } else {
+      ret.indent = ''
     }
 
     return ret
