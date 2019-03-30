@@ -1,13 +1,43 @@
+{
+  function blockfn(type, code, start, end, indent, location) {
+    let ret = {
+      type: type,
+      code: code.map(([a, b]) => b).join(''),
+      start,
+      end
+    }
+
+    if (location.start.column === 1) {
+      ret.indent = indent.join('')
+    }
+
+    return ret
+  }
+  function linefn(type, code, tail, indent, location) {
+    let ret = {
+      type: type,
+      code: code.join(''),
+      tail,
+    }
+
+    if (location.start.column === 1) {
+      ret.indent = indent.join('')
+    }
+
+    return ret
+  }
+}
+
 TipCode
-  = x:(PairComment / PairValueComment / PairValueStringifyComment / LineComment / LineValueComment / LineValueStringifyComment / .)* {
+  = x:(PairValStrComment / PairValComment / PairComment / LineValStrComment / LineValComment / LineComment / .)* {
     let accstr = ''
     let accarr = []
     x.reduce((acc, n) => {
       if (Object.prototype.toString.call(n) === '[object Object]') {
           if (accstr !=='') {
             acc.push({
-              t: 'text',
-              c: accstr
+              type: 'text',
+              code: accstr
             })
           }
           accstr = ''
@@ -20,87 +50,42 @@ TipCode
     }, accarr)
     if (accstr !=='') {
       acc.push({
-        t: 'text',
-        c: accstr
+        type: 'text',
+        code: accstr
       })
     }
     return accarr
   }
 
-PairComment
-  = '/*>' c:(!'*/' .)* '*/' {
-    return {
-      t: "pair",
-      c: c.map(([a, b]) => b).join(''),
-    }
-  }
-
-PairValueComment
-  = '/*>=' c:(!'*/' .)* '*/' {
-    return {
-      t: "pairvalue",
-      c: c.map(([a, b]) => b).join(''),
-    }
-  }
-
-PairValueStringifyComment
-  = '/*>==' c:(!'*/' .)* '*/' {
-    return {
-      t: "pairvaluestringify",
-      c: c.map(([a, b]) => b).join(''),
-    }
-  }
-
 Indent
- = ' ' / '\t'
+  = ' ' / '\t'
+
+PairComment
+  = indent:Indent* start:'/*>' code:(!'*/' .)* end:'*/' {
+    return blockfn('pair', code, start, end, indent, location())
+  }
+
+PairValComment
+  = indent:Indent* start:'/*>=' code:(!'*/' .)* end:'*/' {
+    return blockfn('pair.val', code, start, end, indent, location())
+  }
+
+PairValStrComment
+  = indent:Indent* start:'/*>==' code:(!'*/' .)* end:'*/' {
+    return blockfn('pair.val.str', code, start, end, indent, location())
+  }
 
 LineComment
-  = i:Indent* '//>' c:[^\n]* '\n'? {
-    let l = location()
-    let ret = {
-      t: "line",
-      c: c.join(''),
-    }
-    console.log(l)
-
-    if (l.start.column === 1) {
-      ret.i = i.join('')
-    }
-
-    return ret
+  = indent:Indent* '//>' code:[^\n]* tail:'\n'? {
+    return linefn('line', code, tail, indent, location())
   }
 
-LineValueComment
-  = i:Indent* '//>=' c:[^\n]* '\n'? {
-    let l = location()
-    let ret = {
-      t: "linevalue",
-      c: c.join(''),
-    }
-    console.log(l)
-
-    if (l.start.column === 1) {
-      ret.i = i.join('')
-    }
-
-    return ret
+LineValComment
+  = indent:Indent* '//>=' code:[^\n]* tail:'\n'? {
+    return linefn('line.val', code, tail, indent, location())
   }
 
-LineValueStringifyComment
-  = i:Indent* '//>==' c:[^\n]* '\n'? {
-    let l = location()
-    let ret = {
-      t: "linevaluestringify",
-      c: c.join(''),
-    }
-    console.log(l)
-
-    if (l.start.column === 1) {
-      ret.i = i.join('')
-    }
-
-    return ret
+LineValStrComment
+  = indent:Indent* '//>==' code:[^\n]* tail:'\n'? {
+    return linefn('line.val.str', code, tail, indent, location())
   }
-
-_ "whitespace"
-  = [ \t\n\r]
