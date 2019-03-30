@@ -1,17 +1,20 @@
-//>imlinecode
-function simpleIncludeExample(/*>file*/) {
+//> let a = "a"
+/*>function simpleIncludeExample(a) {
+  return a
+}
+let b = "b"
+*/
   writeln(
     indent(
-      require("/*>=file*/")
+      require("/*>=b*/")
         .readFileSync(file)
-        .toString("/*>==file*/"),
+        .toString("/*>==a*/"),
       __
     )
   );
   writeln(indent("indent", __));
-}
-//>=line
+//>=a
 12323
 /*>123123*/
 223123
-  //>== simpleIncludeExample("./ms.js")
+  //>==simpleIncludeExample("./ms.js")

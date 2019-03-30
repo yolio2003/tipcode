@@ -14,40 +14,48 @@ const write = (p, v) => fs.writeFileSync(p, v, "utf8");
 // tipcode *.tc.js //> /*> //>== //>=  未指派
 // tipcode 不用 runinnewcontext 而是直接编译结果如何？  未指派
 
-var version = require(__dirname + "/package.json")["version"];
-
 let peg = pegjs.generate(read("./tipcode.parser.pegjs"));
 
-let TESTTEXT = read("./tipcode.input.js");
-
-let parsed = peg.parse(TESTTEXT);
+let parsed = peg.parse(read("./tipcode.input.js"));
 // log.log(parsed);
 write("./tipcode.parser.json", stringify(parsed));
 
-let complied = [`let version = '${version}'`, "let out = ''"];
+let complied = [
+  `let version = '${require(__dirname + "/package.json")["version"]}'`,
+  "let out = ''"
+];
 parsed.map(v => {
   switch (v.type) {
     case "text":
       complied.push("out += `" + v.code + "`");
       break;
     case "line":
+      complied.push(v.code + (v.end ? v.end : ""));
+      break;
     case "line.val":
     case "line.val.str":
-      complied.push(
-        "out += `" + v.indent + v.start + v.code + (v.end ? v.end : "") + "`"
-      );
+      complied.push("out += " + v.code);
+      break;
+      // complied.push(
+      //   "out += `" + v.indent + v.start + v.code + (v.end ? v.end : "") + "`"
+      // );
       break;
     case "pair":
+      complied.push(v.code);
+      break;
     case "pair.val":
     case "pair.val.str":
-      complied.push(
-        "out += `" + v.indent + v.start + v.code + (v.end ? v.end : "") + "`"
-      );
+      complied.push("out += " + v.code);
+      break;
+      // complied.push(
+      //   "out += `" + v.indent + v.start + v.code + (v.end ? v.end : "") + "`"
+      // );
       break;
   }
 });
 complied.push(
-  "\nconsole.log(out === require('fs').readFileSync('./tipcode.input.js', 'utf8'))"
+  "\nconsole.log(out)"
+  // "\nconsole.log(out === require('fs').readFileSync('./tipcode.input.js', 'utf8'))"
 );
 
 // log.log(complied.join(""));

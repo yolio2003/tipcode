@@ -1,34 +1,34 @@
 let version = '1.0.1'
 let out = ''
-out += `//>imlinecode
-`
-out += `function simpleIncludeExample(`
-out += `/*>file*/`
-out += `) {
+ let a = "a"
+
+function simpleIncludeExample(a) {
+  return a
+}
+let b = "b"
+
+out += `
   writeln(
     indent(
       require("`
-out += `/*>=file*/`
+out += b
 out += `")
         .readFileSync(file)
         .toString("`
-out += `/*>==file*/`
+out += a
 out += `"),
       __
     )
   );
   writeln(indent("indent", __));
-}
 `
-out += `//>=line
-`
+out += a
 out += `12323
 `
-out += `/*>123123*/`
+123123
 out += `
 223123
 `
-out += `  //>== simpleIncludeExample("./ms.js")
-`
+out +=  simpleIncludeExample("./ms.js")
 
-console.log(out === require('fs').readFileSync('./tipcode.input.js', 'utf8'))
+console.log(out)

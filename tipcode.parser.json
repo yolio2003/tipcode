@@ -1,29 +1,25 @@
 [
   {
     "type": "line",
-    "code": "imlinecode",
+    "code": " let a = \"a\"",
     "start": "//>",
     "end": "\n",
     "indent": ""
   },
   {
-    "type": "text",
-    "code": "function simpleIncludeExample("
-  },
-  {
     "type": "pair",
-    "code": "file",
+    "code": "function simpleIncludeExample(a) {\n  return a\n}\nlet b = \"b\"\n",
     "start": "/*>",
     "end": "*/",
     "indent": ""
   },
   {
     "type": "text",
-    "code": ") {\n  writeln(\n    indent(\n      require(\""
+    "code": "\n  writeln(\n    indent(\n      require(\""
   },
   {
     "type": "pair.val",
-    "code": "file",
+    "code": "b",
     "start": "/*>=",
     "end": "*/",
     "indent": ""
@@ -34,18 +30,18 @@
   },
   {
     "type": "pair.val.str",
-    "code": "file",
+    "code": "a",
     "start": "/*>==",
     "end": "*/",
     "indent": ""
   },
   {
     "type": "text",
-    "code": "\"),\n      __\n    )\n  );\n  writeln(indent(\"indent\", __));\n}\n"
+    "code": "\"),\n      __\n    )\n  );\n  writeln(indent(\"indent\", __));\n"
   },
   {
     "type": "line.val",
-    "code": "line",
+    "code": "a",
     "start": "//>=",
     "end": "\n",
     "indent": ""
