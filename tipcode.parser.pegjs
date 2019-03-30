@@ -1,5 +1,5 @@
-Tipcode
-  = x:(Paircomment / Linecomment / .)* {
+TipCode
+  = x:(PairComment / PairValueComment / PairValueStringifyComment / LineComment / LineValueComment / LineValueStringifyComment / .)* {
     let accstr = ''
     let accarr = []
     x.reduce((acc, n) => {
@@ -18,17 +18,35 @@ Tipcode
           return acc
       }
     }, accarr)
-    accarr.push({
-      t: 'text',
-      c: accstr
-    })
+    if (accstr !=='') {
+      acc.push({
+        t: 'text',
+        c: accstr
+      })
+    }
     return accarr
   }
 
-Paircomment
+PairComment
   = '/*>' c:(!'*/' .)* '*/' {
     return {
-      t: "block",
+      t: "pair",
+      c: c.map(([a, b]) => b).join(''),
+    }
+  }
+
+PairValueComment
+  = '/*>=' c:(!'*/' .)* '*/' {
+    return {
+      t: "pairvalue",
+      c: c.map(([a, b]) => b).join(''),
+    }
+  }
+
+PairValueStringifyComment
+  = '/*>==' c:(!'*/' .)* '*/' {
+    return {
+      t: "pairvaluestringify",
       c: c.map(([a, b]) => b).join(''),
     }
   }
@@ -36,7 +54,7 @@ Paircomment
 Indent
  = ' ' / '\t'
 
-Linecomment
+LineComment
   = i:Indent* '//>' c:[^\n]* '\n'? {
     let l = location()
     let ret = {
@@ -49,7 +67,39 @@ Linecomment
       ret.i = i.join('')
     }
 
-  	return ret
+    return ret
+  }
+
+LineValueComment
+  = i:Indent* '//>=' c:[^\n]* '\n'? {
+    let l = location()
+    let ret = {
+      t: "linevalue",
+      c: c.join(''),
+    }
+    console.log(l)
+
+    if (l.start.column === 1) {
+      ret.i = i.join('')
+    }
+
+    return ret
+  }
+
+LineValueStringifyComment
+  = i:Indent* '//>==' c:[^\n]* '\n'? {
+    let l = location()
+    let ret = {
+      t: "linevaluestringify",
+      c: c.join(''),
+    }
+    console.log(l)
+
+    if (l.start.column === 1) {
+      ret.i = i.join('')
+    }
+
+    return ret
   }
 
 _ "whitespace"

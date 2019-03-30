@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/yolio2003/tipcode/issues"
   },
-  "homepage": "https://github.com/yolio2003/tipcode#readme"
+  "homepage": "https://github.com/yolio2003/tipcode#readme",
+  "devDependencies": {
+    "metascript": "^1.0.0"
+  }
 }

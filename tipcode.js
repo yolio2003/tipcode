@@ -1,5 +1,3 @@
-// MetaScript ( monkeytao, 5 小时前 )
-// https://github.com/dcodeIO/MetaScript
 // tipcode 去掉 eval  未指派
 // tipcode 支持 sourcemap  未指派
 // tipcode 支持 上报 和 log  未指派
